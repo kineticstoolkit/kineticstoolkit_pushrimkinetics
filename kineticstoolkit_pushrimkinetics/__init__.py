@@ -186,10 +186,6 @@ def _find_recovery_indices(Mz: np.ndarray, /) -> np.ndarray:
     np.ndarray
         Array of bools where each True represents recovery.
 
-    See Also
-    --------
-    ktk.cycles.detect_cycles
-
     """
     Mz = Mz.copy()
 
@@ -439,12 +435,6 @@ def calculate_velocity(tsin: TimeSeries, /) -> TimeSeries:
     -------
     TimeSeries
                 A copy of the TimeSeries with the added data key 'Velocity'.
-
-    See Also
-    --------
-    ktk.filters.butter : Butterworth filter for TimeSeries
-    ktk.filters.savgol : Savitsky-golay filter for TimeSeries
-    ktk.filters.deriv : Derivative filter for TimeSeries
 
     """
     tsangle = TimeSeries()

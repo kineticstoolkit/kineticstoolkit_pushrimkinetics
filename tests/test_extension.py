@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Unit tests, run by pytest."""
+"""Unit tests, run by pytest from the module toplevel."""
 
 
 __author__ = "Félix Chénier"
@@ -41,12 +41,12 @@ TEST_CALIBRATION_MATRIX = {
 def test_read_csv_txt_file():
     """Test that read_file works similarly for SW's csv and txt files."""
     kinetics_csv = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_propulsion.csv',
+        'tutorials/pushrimkinetics_propulsion.csv',
         file_format='smartwheel',
     )
 
     kinetics_txt = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_propulsion.txt',
+        'tutorials//pushrimkinetics_propulsion.txt',
         file_format='smartwheeltxt',
     )
 
@@ -62,11 +62,11 @@ def test_read_csv_txt_file():
 def test_remove_offsets():
     """Test that remove_offsets works with and without a baseline."""
     kinetics = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_offsets_propulsion.csv',
+        'tutorials//pushrimkinetics_offsets_propulsion.csv',
         file_format='smartwheel')
 
     baseline = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_offsets_baseline.csv',
+        'tutorials//pushrimkinetics_offsets_baseline.csv',
         file_format='smartwheel')
 
     no_offsets1 = ktk.ext.pushrimkinetics.remove_offsets(kinetics)
@@ -84,7 +84,7 @@ def test_remove_offsets():
 def test_calculate_forces_and_moments():
     """Test that force calculation is similar to precalculated forces."""
     kinetics = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_offsets_propulsion.csv',
+        'tutorials//pushrimkinetics_offsets_propulsion.csv',
         file_format='smartwheel',
     )
 
@@ -120,7 +120,7 @@ def test_calculate_forces_and_moments():
 def test_calculate_velocity_power():
     """No-regression test for calculate_velocity and calculate_power."""
     kinetics = ktk.ext.pushrimkinetics.read_file(
-        'data/pushrimkinetics_offsets_propulsion.csv',
+        'tutorials//pushrimkinetics_offsets_propulsion.csv',
         file_format='smartwheel',
     )
 
