@@ -6,7 +6,7 @@ Provide functions to process kinetic data from instrumented wheelchair wheels.
 ## Installing
 
 ```
-pip install git+https://github.com/USERNAME/kineticstoolkit_pushrimkinetics
+pip install git+https://github.com/felixchenier/kineticstoolkit_pushrimkinetics
 ```
 
 ## Uninstalling
