@@ -30,7 +30,7 @@ setuptools.setup(
         license_files=['LICENSE.txt'],
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
-    packages=['*.py'].extend(setuptools.find_packages()),
+    packages=setuptools.find_packages(),
     install_requires=[],
     python_requires='>=3.8',
 )
