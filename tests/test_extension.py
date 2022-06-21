@@ -38,16 +38,14 @@ TEST_CALIBRATION_MATRIX = {
 }
 
 
-def test_read_csv_txt_file():
+def test_read_smartwheel():
     """Test that read_file works similarly for SW's csv and txt files."""
-    kinetics_csv = ktk.ext.pushrimkinetics.read_file(
-        'tutorials/pushrimkinetics_propulsion.csv',
-        file_format='smartwheel',
+    kinetics_csv = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials/pushrimkinetics_propulsion.csv'
     )
 
-    kinetics_txt = ktk.ext.pushrimkinetics.read_file(
-        'tutorials//pushrimkinetics_propulsion.txt',
-        file_format='smartwheeltxt',
+    kinetics_txt = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials//pushrimkinetics_propulsion.txt'
     )
 
     smaller = min(kinetics_csv.time.shape[0],
@@ -61,13 +59,13 @@ def test_read_csv_txt_file():
 
 def test_remove_offsets():
     """Test that remove_offsets works with and without a baseline."""
-    kinetics = ktk.ext.pushrimkinetics.read_file(
-        'tutorials//pushrimkinetics_offsets_propulsion.csv',
-        file_format='smartwheel')
+    kinetics = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials//pushrimkinetics_offsets_propulsion.csv'
+    )
 
-    baseline = ktk.ext.pushrimkinetics.read_file(
-        'tutorials//pushrimkinetics_offsets_baseline.csv',
-        file_format='smartwheel')
+    baseline = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials//pushrimkinetics_offsets_baseline.csv'
+    )
 
     no_offsets1 = ktk.ext.pushrimkinetics.remove_offsets(kinetics)
     no_offsets2 = ktk.ext.pushrimkinetics.remove_offsets(kinetics, baseline)
@@ -81,15 +79,14 @@ def test_remove_offsets():
                          no_offsets2.data['Moments']) < 0.1)
 
 
-def test_calculate_forces_and_moments():
+def test_apply_calibration():
     """Test that force calculation is similar to precalculated forces."""
-    kinetics = ktk.ext.pushrimkinetics.read_file(
-        'tutorials//pushrimkinetics_offsets_propulsion.csv',
-        file_format='smartwheel',
+    kinetics = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials//pushrimkinetics_offsets_propulsion.csv'
     )
 
     test = kinetics.copy()
-    test = ktk.ext.pushrimkinetics.calculate_forces_and_moments(
+    test = ktk.ext.pushrimkinetics.apply_calibration(
         test,
         **TEST_CALIBRATION_MATRIX,
         reference_frame='hub',
@@ -119,9 +116,8 @@ def test_calculate_forces_and_moments():
 
 def test_calculate_velocity_power():
     """No-regression test for calculate_velocity and calculate_power."""
-    kinetics = ktk.ext.pushrimkinetics.read_file(
-        'tutorials//pushrimkinetics_offsets_propulsion.csv',
-        file_format='smartwheel',
+    kinetics = ktk.ext.pushrimkinetics.read_smartwheel(
+        'tutorials//pushrimkinetics_offsets_propulsion.csv'
     )
 
     kinetics = ktk.ext.pushrimkinetics.calculate_velocity(kinetics)
