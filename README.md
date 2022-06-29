@@ -2,6 +2,8 @@
 
 Provide functions to process kinetic data from instrumented wheelchair wheels.
 
+This extension completely replaces the former `ktk.pushrimkinetics` module that is now deprecated.
+
 
 ## Installing
 
