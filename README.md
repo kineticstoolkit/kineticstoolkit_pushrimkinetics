@@ -1,6 +1,6 @@
 # kineticstoolkit_pushrimkinetics
 
-Provide functions to process kinetic data from instrumented wheelchair wheels such as the SmartWheel, picture below.
+Provide functions to process kinetic data from instrumented wheelchair wheels such as the SmartWheel, pictured below.
 
 ![SmartWheel](SmartWheel.jpg)
 
