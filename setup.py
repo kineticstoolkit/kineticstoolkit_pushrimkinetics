@@ -31,6 +31,6 @@ setuptools.setup(
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     packages=setuptools.find_packages(),
-    install_requires=[],
+    install_requires=['kineticstoolkit'],
     python_requires='>=3.8',
 )
