@@ -395,12 +395,12 @@ def apply_calibration(
     ts_out.data['Forces'] = np.concatenate(
         [forces_moments[:, 0:3], np.zeros((forces_moments.shape[0], 1))],
         axis=1)
-    ts_out.add_data_info('Forces', 'Unit', 'N', in_place=True)
+    ts_out.add_data_info('Forces', 'Unit', 'N', in_place=True, overwrite=True)
 
     ts_out.data['Moments'] = np.concatenate(
         [forces_moments[:, 3:6], np.zeros((forces_moments.shape[0], 1))],
         axis=1)
-    ts_out.add_data_info('Moments', 'Unit', 'Nm', in_place=True)
+    ts_out.add_data_info('Moments', 'Unit', 'Nm', in_place=True, overwrite=True)
 
     return(ts_out)
 
