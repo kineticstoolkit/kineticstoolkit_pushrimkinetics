@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright 2020-2022 Félix Chénier
+# Copyright 2020-2025 Félix Chénier
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ Provides functions to process kinetic data from instrumented wheelchair wheels.
 """
 
 __author__ = "Félix Chénier"
-__copyright__ = "Copyright (C) 2020-2022 Félix Chénier"
+__copyright__ = "Copyright (C) 2020-2025 Félix Chénier"
 __email__ = "chenier.felix@uqam.ca"
 __license__ = "Apache 2.0"
 
@@ -29,16 +29,15 @@ import kineticstoolkit as ktk
 import numpy as np
 import pandas as pd
 import struct  # to unpack binary data from SmartWheels' txt files
-from typing import Union, Optional
 
 
 def __dir__():
     return [
-        'read_smartwheel',
-        'remove_offsets',
-        'apply_calibration',
-        'calculate_velocity',
-        'calculate_power',
+        "read_smartwheel",
+        "remove_offsets",
+        "apply_calibration",
+        "calculate_velocity",
+        "calculate_power",
     ]
 
 
@@ -57,11 +56,11 @@ def read_smartwheel(filename: str) -> ktk.TimeSeries:
         The file contents.
 
     """
-    if filename.lower().endswith('.csv'):
+    if filename.lower().endswith(".csv"):
 
         dataframe = pd.read_csv(filename, delimiter=None, header=None)
         if dataframe.shape[1] == 1:  # Retry with ; as separator
-            dataframe = pd.read_csv(filename, delimiter=';', header=None)
+            dataframe = pd.read_csv(filename, delimiter=";", header=None)
 
         data = dataframe.to_numpy()
         index = data[:, 1]
@@ -74,76 +73,85 @@ def read_smartwheel(filename: str) -> ktk.TimeSeries:
 
         ts = ktk.TimeSeries(time=time)
 
-        ts.data['Index'] = index
-        ts.data['Channels'] = channels
-        ts.data['Forces'] = np.block([[forces, np.zeros((len(index), 1))]])
-        ts.data['Moments'] = np.block([[moments, np.zeros((len(index), 1))]])
-        ts.data['Angle'] = angle_rad
+        ts.data["Index"] = index
+        ts.data["Channels"] = channels
+        ts.data["Forces"] = np.block([[forces, np.zeros((len(index), 1))]])
+        ts.data["Moments"] = np.block([[moments, np.zeros((len(index), 1))]])
+        ts.data["Angle"] = angle_rad
 
-        ts = ts.add_data_info('Channels', 'Unit', 'raw')
-        ts = ts.add_data_info('Forces', 'Unit', 'N')
-        ts = ts.add_data_info('Moments', 'Unit', 'Nm')
-        ts = ts.add_data_info('Angle', 'Unit', 'rad')
+        ts = ts.add_data_info("Channels", "Unit", "raw", overwrite=True)
+        ts = ts.add_data_info("Forces", "Unit", "N", overwrite=True)
+        ts = ts.add_data_info("Moments", "Unit", "Nm", overwrite=True)
+        ts = ts.add_data_info("Angle", "Unit", "rad", overwrite=True)
 
-    elif filename.lower().endswith('.txt'):
+    elif filename.lower().endswith(".txt"):
 
-        data = {'ch1': [], 'ch2': [], 'ch3': [],
-                'ch4': [], 'ch5': [], 'ch6': [], 'angle_ticks': []}
+        data = {
+            "ch1": [],
+            "ch2": [],
+            "ch3": [],
+            "ch4": [],
+            "ch5": [],
+            "ch6": [],
+            "angle_ticks": [],
+        }
 
         length = 0
-        with open(filename, 'rb') as fid:
+        with open(filename, "rb") as fid:
 
             while True:
                 try:
                     _ = fid.read(2)
-                    data['ch1'].append(struct.unpack('h', fid.read(2))[0])
-                    data['ch2'].append(struct.unpack('h', fid.read(2))[0])
-                    data['ch3'].append(struct.unpack('h', fid.read(2))[0])
-                    data['ch4'].append(struct.unpack('h', fid.read(2))[0])
-                    data['ch5'].append(struct.unpack('h', fid.read(2))[0])
-                    data['ch6'].append(struct.unpack('h', fid.read(2))[0])
-                    data['angle_ticks'].append(
-                        struct.unpack('i', fid.read(4))[0])
+                    data["ch1"].append(struct.unpack("h", fid.read(2))[0])
+                    data["ch2"].append(struct.unpack("h", fid.read(2))[0])
+                    data["ch3"].append(struct.unpack("h", fid.read(2))[0])
+                    data["ch4"].append(struct.unpack("h", fid.read(2))[0])
+                    data["ch5"].append(struct.unpack("h", fid.read(2))[0])
+                    data["ch6"].append(struct.unpack("h", fid.read(2))[0])
+                    data["angle_ticks"].append(struct.unpack("i", fid.read(4))[0])
                     _ = fid.read(8)
                     length += 1
                 except Exception:
                     break
 
-        ch1 = np.array(data['ch1'][1:length])  # Remove 1st sample to be
-        ch2 = np.array(data['ch2'][1:length])  # consistent with CSV file
-        ch3 = np.array(data['ch3'][1:length])
-        ch4 = np.array(data['ch4'][1:length])
-        ch5 = np.array(data['ch5'][1:length])
-        ch6 = np.array(data['ch6'][1:length])
-        angle_ticks = np.array(data['angle_ticks'][1:length])
+        ch1 = np.array(data["ch1"][1:length])  # Remove 1st sample to be
+        ch2 = np.array(data["ch2"][1:length])  # consistent with CSV file
+        ch3 = np.array(data["ch3"][1:length])
+        ch4 = np.array(data["ch4"][1:length])
+        ch5 = np.array(data["ch5"][1:length])
+        ch6 = np.array(data["ch6"][1:length])
+        angle_ticks = np.array(data["angle_ticks"][1:length])
 
         # Keep only 12 least significant bytes
-        ch1 = np.mod(ch1, 2 ** 12)
-        ch2 = np.mod(ch2, 2 ** 12)
-        ch3 = np.mod(ch3, 2 ** 12)
-        ch4 = np.mod(ch4, 2 ** 12)
-        ch5 = np.mod(ch5, 2 ** 12)
-        ch6 = np.mod(ch6, 2 ** 12)
+        ch1 = np.mod(ch1, 2**12)
+        ch2 = np.mod(ch2, 2**12)
+        ch3 = np.mod(ch3, 2**12)
+        ch4 = np.mod(ch4, 2**12)
+        ch5 = np.mod(ch5, 2**12)
+        ch6 = np.mod(ch6, 2**12)
 
-        # Convert angle in radian
+        # Convert angle into radian
         angle = angle_ticks / 4096 * 2 * np.pi
 
-        ts = ktk.TimeSeries(
-            time=np.linspace(0, (length - 1) / 240, length - 1))
-        ts.data['Channels'] = np.concatenate(
-            [ch1[:, np.newaxis],
-             ch2[:, np.newaxis],
-             ch3[:, np.newaxis],
-             ch4[:, np.newaxis],
-             ch5[:, np.newaxis],
-             ch6[:, np.newaxis]], axis=1)
-        ts.data['Angle'] = angle
+        ts = ktk.TimeSeries(time=np.linspace(0, (length - 1) / 240, length - 1))
+        ts.data["Channels"] = np.concatenate(
+            [
+                ch1[:, np.newaxis],
+                ch2[:, np.newaxis],
+                ch3[:, np.newaxis],
+                ch4[:, np.newaxis],
+                ch5[:, np.newaxis],
+                ch6[:, np.newaxis],
+            ],
+            axis=1,
+        )
+        ts.data["Angle"] = angle
 
-        ts = ts.add_data_info('Channels', 'Unit', 'raw')
-        ts = ts.add_data_info('Angle', 'Unit', 'rad')
+        ts = ts.add_data_info("Channels", "Unit", "raw", overwrite=True)
+        ts = ts.add_data_info("Angle", "Unit", "rad", overwrite=True)
 
     else:
-        raise ValueError('Unknown file format.')
+        raise ValueError("Unknown file format.")
 
     return ts
 
@@ -156,7 +164,7 @@ def _find_recovery_indices(Mz: np.ndarray) -> np.ndarray:
     pushes and which data correspond to recoveries. The method is very
     conservative on what could be considered as a recovery, so that every
     index returned by this function is almost certain to correspond to a
-    recovery. This function is used by `pushrimkinetics.remove_sinusoids`
+    recovery. This function is used by `pushrimkinetics.remove_offsets`
     to identify the instants with no hand contact. It should not be used to
     isolate the push and recovery phases (use `ktk.cycles.detect_cycles()`
     instead).
@@ -186,8 +194,7 @@ def _find_recovery_indices(Mz: np.ndarray) -> np.ndarray:
         index_to_remove = index_to_remove[~np.isnan(sorted_Mz)]
 
         # Remove the 1% upper.
-        index_to_remove = index_to_remove[
-            int(0.99*len(index_to_remove))-1:]
+        index_to_remove = index_to_remove[int(0.99 * len(index_to_remove)) - 1 :]
 
         # Assign nan to these data
         Mz[index_to_remove] = np.nan
@@ -198,8 +205,7 @@ def _find_recovery_indices(Mz: np.ndarray) -> np.ndarray:
 
 
 def remove_offsets(
-        ts: ktk.TimeSeries,
-        baseline_kinetics: Optional[ktk.TimeSeries] = None
+    ts: ktk.TimeSeries, baseline_kinetics: ktk.TimeSeries | None = None
 ) -> ktk.TimeSeries:
     """
     Remove dynamic offsets in forces and moments.
@@ -234,61 +240,68 @@ def remove_offsets(
 
     if baseline_kinetics is None:
         # Create baseline kinetics.
-        recovery_index = _find_recovery_indices(ts.data['Moments'][:, 2])
-        f_ofs = np.hstack((ts.data['Forces'][recovery_index, 0:3],
-                           ts.data['Moments'][recovery_index, 0:3]))
-        theta_baseline = ts.data['Angle'][recovery_index]
+        recovery_index = _find_recovery_indices(ts.data["Moments"][:, 2])
+        f_ofs = np.hstack(
+            (
+                ts.data["Forces"][recovery_index, 0:3],
+                ts.data["Moments"][recovery_index, 0:3],
+            )
+        )
+        theta_baseline = ts.data["Angle"][recovery_index]
 
     else:
         # Use baseline kinetics.
-        f_ofs = np.hstack((baseline_kinetics.data['Forces'][:, 0:3],
-                           baseline_kinetics.data['Moments'][:, 0:3]))
-        theta_baseline = baseline_kinetics.data['Angle'][:]
+        f_ofs = np.hstack(
+            (
+                baseline_kinetics.data["Forces"][:, 0:3],
+                baseline_kinetics.data["Moments"][:, 0:3],
+            )
+        )
+        theta_baseline = baseline_kinetics.data["Angle"][:]
 
     # Do the regression
     theta_baseline = theta_baseline[:, np.newaxis]
-    q = np.hstack((
-        np.sin(theta_baseline),
-        np.cos(theta_baseline),
-        np.ones((len(theta_baseline), 1))
-    ))
+    q = np.hstack(
+        (
+            np.sin(theta_baseline),
+            np.cos(theta_baseline),
+            np.ones((len(theta_baseline), 1)),
+        )
+    )
     A = np.linalg.lstsq(q, f_ofs, rcond=None)
     A = A[0]
 
     # Apply the regression to forces and moments
-    theta = ts.data['Angle']
+    theta = ts.data["Angle"]
     theta = theta[:, np.newaxis]
 
-    f = np.hstack((ts.data['Forces'][:, 0:3],
-                   ts.data['Moments'][:, 0:3]))
+    f = np.hstack((ts.data["Forces"][:, 0:3], ts.data["Moments"][:, 0:3]))
 
-    q = np.hstack((
-        np.sin(theta),
-        np.cos(theta),
-        np.ones((len(theta), 1))
-    ))
+    q = np.hstack((np.sin(theta), np.cos(theta), np.ones((len(theta), 1))))
 
     f = f - q @ A
 
     # Make the output timeseries
-    ts_out.data['Forces'] = np.zeros((f.shape[0], 4))
-    ts_out.data['Forces'][:, 0:3] = f[:, 0:3]
-    ts_out.data['Forces'][:, 3] = 0
-    ts_out.data['Moments'] = np.zeros((f.shape[0], 4))
-    ts_out.data['Moments'][:, 0:3] = f[:, 3:6]
-    ts_out.data['Moments'][:, 3] = 0
-    ts_out.add_data_info('Forces', 'Unit', 'N', in_place=True)
-    ts_out.add_data_info('Moments', 'Unit', 'Nm', in_place=True)
+    ts_out.data["Forces"] = np.zeros((f.shape[0], 4))
+    ts_out.data["Forces"][:, 0:3] = f[:, 0:3]
+    ts_out.data["Forces"][:, 3] = 0
+    ts_out.data["Moments"] = np.zeros((f.shape[0], 4))
+    ts_out.data["Moments"][:, 0:3] = f[:, 3:6]
+    ts_out.data["Moments"][:, 3] = 0
+    ts_out.add_data_info("Forces", "Unit", "N", in_place=True, overwrite=True)
+    ts_out.add_data_info("Moments", "Unit", "Nm", in_place=True, overwrite=True)
 
     return ts_out
 
 
 def apply_calibration(
-        ts: ktk.TimeSeries,
-        gains: Union[np.ndarray, str],
-        offsets: np.ndarray = np.zeros((6)), *,
-        transducer: str = 'force_cell',
-        reference_frame: str = 'wheel') -> ktk.TimeSeries:
+    ts: ktk.TimeSeries,
+    gains: np.ndarray,
+    offsets: np.ndarray = np.zeros((6)),
+    *,
+    transducer: str = "force_cell",
+    reference_frame: str = "wheel"
+) -> ktk.TimeSeries:
     """
     Calculate pushrim forces and moments based on raw channel values.
 
@@ -326,83 +339,106 @@ def apply_calibration(
 
     """
     # Calculate the forces and moments and add to the output
-    if transducer == 'smartwheel':
+    if transducer == "smartwheel":
 
         # Calculate the rotation angle to apply to the calculated ts
-        if reference_frame == 'wheel':
+        if reference_frame == "wheel":
             theta = np.array([0.0])
-        elif reference_frame == 'hub':
-            theta = ts.data['Angle']
+        elif reference_frame == "hub":
+            theta = ts.data["Angle"]
         else:
             raise ValueError("reference_frame must be 'wheel' or 'hub'")
 
         # Extract channels and angle
-        ch = ts.data['Channels'] - 2048
+        ch = ts.data["Channels"] - 2048
 
         # Calculate the forces and moments
-        Fx = gains[0] * (
-            ch[:, 0] * np.sin(theta) +
-            ch[:, 2] * np.sin(theta + 2 * np.pi / 3) +
-            ch[:, 4] * np.sin(theta + 4 * np.pi / 3)) + offsets[0]
+        Fx = (
+            gains[0]
+            * (
+                ch[:, 0] * np.sin(theta)
+                + ch[:, 2] * np.sin(theta + 2 * np.pi / 3)
+                + ch[:, 4] * np.sin(theta + 4 * np.pi / 3)
+            )
+            + offsets[0]
+        )
 
-        Fy = gains[1] * (
-            ch[:, 0] * np.cos(theta) +
-            ch[:, 2] * np.cos(theta + 2 * np.pi / 3) +
-            ch[:, 4] * np.cos(theta + 4 * np.pi / 3)) + offsets[1]
+        Fy = (
+            gains[1]
+            * (
+                ch[:, 0] * np.cos(theta)
+                + ch[:, 2] * np.cos(theta + 2 * np.pi / 3)
+                + ch[:, 4] * np.cos(theta + 4 * np.pi / 3)
+            )
+            + offsets[1]
+        )
 
         Fz = gains[2] * (ch[:, 1] + ch[:, 3] + ch[:, 5]) + offsets[2]
 
-        Mx = gains[3] * (
-            ch[:, 1] * np.sin(theta) +
-            ch[:, 3] * np.sin(theta + 2 * np.pi / 3) +
-            ch[:, 5] * np.sin(theta + 4 * np.pi / 3)) + offsets[3]
+        Mx = (
+            gains[3]
+            * (
+                ch[:, 1] * np.sin(theta)
+                + ch[:, 3] * np.sin(theta + 2 * np.pi / 3)
+                + ch[:, 5] * np.sin(theta + 4 * np.pi / 3)
+            )
+            + offsets[3]
+        )
 
-        My = gains[4] * (
-            ch[:, 1] * np.cos(theta) +
-            ch[:, 3] * np.cos(theta + 2 * np.pi / 3) +
-            ch[:, 5] * np.cos(theta + 4 * np.pi / 3)) + offsets[4]
+        My = (
+            gains[4]
+            * (
+                ch[:, 1] * np.cos(theta)
+                + ch[:, 3] * np.cos(theta + 2 * np.pi / 3)
+                + ch[:, 5] * np.cos(theta + 4 * np.pi / 3)
+            )
+            + offsets[4]
+        )
 
         Mz = gains[5] * (ch[:, 0] + ch[:, 2] + ch[:, 4]) + offsets[5]
-        forces_moments = np.block([Fx[:, np.newaxis],
-                                   Fy[:, np.newaxis],
-                                   Fz[:, np.newaxis],
-                                   Mx[:, np.newaxis],
-                                   My[:, np.newaxis],
-                                   Mz[:, np.newaxis]])
+        forces_moments = np.block(
+            [
+                Fx[:, np.newaxis],
+                Fy[:, np.newaxis],
+                Fz[:, np.newaxis],
+                Mx[:, np.newaxis],
+                My[:, np.newaxis],
+                Mz[:, np.newaxis],
+            ]
+        )
 
-    elif transducer == 'force_cell':
+    elif transducer == "force_cell":
 
         # Calculate the rotation angle to apply to the calculated ts
-        if reference_frame == 'wheel':
+        if reference_frame == "wheel":
             theta = np.array([0.0])
-        elif reference_frame == 'hub':
-            raise NotImplementedError("hub reference_frame not implemented yet"
-                                      "for force_cell transducers.")
+        elif reference_frame == "hub":
+            raise NotImplementedError(
+                "hub reference_frame not implemented yet" "for force_cell transducers."
+            )
         else:
             raise ValueError("reference_frame must be 'wheel' or 'hub'")
 
-        n_frames = ts.data['Channels'].shape[0]
+        n_frames = ts.data["Channels"].shape[0]
 
         forces_moments = np.empty((n_frames, 6))
         for i_frame in range(n_frames):
-            forces_moments[i_frame] = (gains @
-                                       ts.data['Channels'][i_frame] +
-                                       offsets)
+            forces_moments[i_frame] = gains @ ts.data["Channels"][i_frame] + offsets
 
     # Format these data in the output timeseries
     ts_out = ts.copy()
 
-    ts_out.data['Forces'] = np.concatenate(
-        [forces_moments[:, 0:3], np.zeros((forces_moments.shape[0], 1))],
-        axis=1)
-    ts_out.add_data_info('Forces', 'Unit', 'N', in_place=True)
+    ts_out.data["Forces"] = np.concatenate(
+        [forces_moments[:, 0:3], np.zeros((forces_moments.shape[0], 1))], axis=1
+    )
+    ts_out.add_data_info("Forces", "Unit", "N", in_place=True, overwrite=True)
 
-    ts_out.data['Moments'] = np.concatenate(
-        [forces_moments[:, 3:6], np.zeros((forces_moments.shape[0], 1))],
-        axis=1)
-    ts_out.add_data_info('Moments', 'Unit', 'Nm', in_place=True)
+    ts_out.data["Moments"] = np.concatenate(
+        [forces_moments[:, 3:6], np.zeros((forces_moments.shape[0], 1))], axis=1
+    )
+    ts_out.add_data_info("Moments", "Unit", "Nm", in_place=True, overwrite=True)
 
-    return(ts_out)
+    return ts_out
 
 
 def calculate_velocity(ts: ktk.TimeSeries) -> ktk.TimeSeries:
@@ -429,17 +465,17 @@ def calculate_velocity(ts: ktk.TimeSeries) -> ktk.TimeSeries:
     """
     tsangle = ktk.TimeSeries()
     tsangle.time = ts.time
-    tsangle.data['Angle'] = ts.data['Angle']
-    tsvelocity = ktk.filters.savgol(tsangle, window_length=21,
-                                    poly_order=2, deriv=1)
+    tsangle.data["Angle"] = ts.data["Angle"]
+    tsvelocity = ktk.filters.savgol(tsangle, window_length=21, poly_order=2, deriv=1)
     tsout = ts.copy()
-    tsout.data['Velocity'] = tsvelocity.data['Angle']
+    tsout.data["Velocity"] = tsvelocity.data["Angle"]
     try:
         tsout.add_data_info(
-            'Velocity',
-            'Unit',
-            tsout.data_info['Angle']['Unit'] + '/s',
+            "Velocity",
+            "Unit",
+            tsout.data_info["Angle"]["Unit"] + "/s",
             in_place=True,
+            overwrite=True,
         )
     except KeyError:
         pass
@@ -463,7 +499,6 @@ def calculate_power(ts: ktk.TimeSeries) -> ktk.TimeSeries:
 
     """
     tsout = ts.copy()
-    tsout.data['Power'] = (ts.data['Velocity'] *
-                           ts.data['Moments'][:, 2])
-    tsout.add_data_info('Power', 'Unit', 'W', in_place=True)
+    tsout.data["Power"] = ts.data["Velocity"] * ts.data["Moments"][:, 2]
+    tsout.add_data_info("Power", "Unit", "W", in_place=True, overwrite=True)
     return tsout
