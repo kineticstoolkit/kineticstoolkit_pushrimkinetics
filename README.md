@@ -1,5 +1,16 @@
 # kineticstoolkit_pushrimkinetics
 
+Obsolete. In date of June 20th 2025, all extensions are migrated to the new `kineticstoolkit_extensions` package, which can be installed using pip or conda. The new extension mechanism, which has been selected to maximize the stability of the code in time (for example by running unit tests continuously) is explained [here](https://kineticstoolkit.uqam.ca/doc/extensions.html).
+
+To use the `pushrimkinetics` extension, we now install both `kineticstoolkit` and `kineticstoolkit-extensions`, and then all `pushrimkinetics` functions become available in the `kineticstoolkit.ext.pushrimkinetics` namespace.
+
+This repository will be archived or deleted in the future.
+
+Old description below.
+
+---
+
+
 Provide functions to process kinetic data from instrumented wheelchair wheels
 such as the SmartWheel, pictured below.
 
