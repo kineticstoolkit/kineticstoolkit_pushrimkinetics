@@ -2,7 +2,15 @@
 
 **Obsolete**. In date of June 20th 2025, all extensions are migrated to the new `kineticstoolkit_extensions` package, which can be installed using pip or conda. The new extension mechanism, which has been selected to maximize the stability of the code in time (for example by running unit tests continuously) is explained [here](https://kineticstoolkit.uqam.ca/doc/extensions.html).
 
-To use the `pushrimkinetics` extension, we now install both `kineticstoolkit` and `kineticstoolkit_extensions`, and then all `pushrimkinetics` functions become available in the `kineticstoolkit.ext.pushrimkinetics` namespace.
+To use the `pushrimkinetics` extension, we now install `kineticstoolkit_extensions` and we use `pushrimkinetics` functions using:
+
+```
+import kineticstoolkit_extensions.pushrimkinetics as pk
+
+pk.function1()
+pk.function2()
+etc.
+```
 
 This repository will be archived or deleted in the future.
 
